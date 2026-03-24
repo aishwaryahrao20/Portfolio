@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio website for Aishwarya Hareesh Rao — embedded systems, TinyML, real-time signal processing, and intelligent engineering projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+
+  <title>Aishwarya Hareesh Rao | Portfolio</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path>
+              <path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path>
+              <path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path>
+              <path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path>
+              <path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+
+    <main id="main">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy" data-reveal>
+            <span class="eyebrow"><span class="eyebrow-dot"></span> Portfolio · Embedded Systems · TinyML · Real-Time AI</span>
+            <h1 class="hero-title">Building intelligent, reliable systems with <span class="accent-text">TinyML + embedded engineering.</span></h1>
+            <p class="hero-text">I am Aishwarya Hareesh Rao — an Electrical Engineering master’s student focused on embedded AI, automation pipelines, signal processing, and reliability-driven engineering. I build low-latency systems that turn real-world signals into measurable decisions.</p>
+            <div class="hero-actions">
+              <a class="button" href="/projects/">View projects</a>
+              <a class="button-ghost" href="/experience/">View experience</a>
+              <a class="button-ghost" href="/#contact">Contact me</a>
+              <a class="button-ghost" href="/assets/resume/Aishwarya_Hareesh_Rao_Resume.pdf" target="_blank" rel="noreferrer">Download resume</a>
+            </div>
+          </div>
+
+          <aside class="hero-panel" data-reveal>
+            <div class="hero-panel-stat">
+              <div class="stat-card">
+                <span class="stat-value">3+</span>
+                <span class="stat-label">Featured projects</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value">1</span>
+                <span class="stat-label">Industry internship</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value">2026</span>
+                <span class="stat-label">MSE target</span>
+              </div>
+            </div>
+            <ul class="hero-list">
+              <li>Embedded AI and TinyML deployment on resource-constrained platforms.</li>
+              <li>Real-time signal processing, anomaly detection, and closed-loop decision systems.</li>
+              <li>VLSI-aware engineering with Cadence, HSPICE, StarRC, and structured validation.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="focus-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="focus-title">What I work on</h2>
+              <p class="section-text">A clean, easy-to-scan overview that helps visitors understand your strengths before they dive into the details.</p>
+            </div>
+          </div>
+
+          <div class="focus-grid">
+            <a class="focus-card" href="/projects/" data-reveal>
+              <span class="focus-icon">🧩</span>
+              <div>
+                <h3>Projects</h3>
+                <p>Modern, click-through project pages with full technical details.</p>
+              </div>
+            </a>
+            <a class="focus-card" href="/experience/" data-reveal>
+              <span class="focus-icon">💼</span>
+              <div>
+                <h3>Experience</h3>
+                <p>Internship work, validation workflows, and engineering impact.</p>
+              </div>
+            </a>
+            <a class="focus-card" href="/projects/audio-based-keyword-spotting/" data-reveal>
+              <span class="focus-icon">🎙️</span>
+              <div>
+                <h3>TinyML</h3>
+                <p>On-device inference, low-latency models, and embedded deployment.</p>
+              </div>
+            </a>
+            <a class="focus-card" href="/projects/driver-distraction-drowsiness-detection/" data-reveal>
+              <span class="focus-icon">📡</span>
+              <div>
+                <h3>Signal Processing</h3>
+                <p>Sensor-driven analytics, control logic, and live event detection.</p>
+              </div>
+            </a>
+            <a class="focus-card" href="/projects/integrate-and-fire-neuron-design/" data-reveal>
+              <span class="focus-icon">⚙️</span>
+              <div>
+                <h3>VLSI / EDA</h3>
+                <p>Parasitic-aware timing, DRC/LVS-clean layout, and critical path analysis.</p>
+              </div>
+            </a>
+            <a class="focus-card" href="/#contact" data-reveal>
+              <span class="focus-icon">✉️</span>
+              <div>
+                <h3>Contact</h3>
+                <p>Email, LinkedIn, and a fast way for recruiters to reach out.</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="featured-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="featured-title">The latest. <span class="accent-text">Take a look at what's new.</span></h2>
+              <p class="section-text">Each card keeps the preview simple. Visitors click the title to open the full project page in the same browser tab.</p>
+            </div>
+            <a class="button-inline" href="/projects/">See all projects →</a>
+          </div>
+
+          <div class="card-grid">
+            <a class="link-card" href="/projects/audio-based-keyword-spotting/" data-reveal>
+              <span class="card-kicker">AI / ML</span>
+              <h3>Audio-Based Keyword Spotting System Using TinyML</h3>
+              <p class="project-meta">Aug 2025 – Dec 2025 · Arizona State University</p>
+              <div class="meta-tags">
+                <span class="meta-tag">MFCC</span>
+                <span class="meta-tag">Arduino Nano 33 BLE Sense</span>
+              </div>
+              <span class="arrow">View details →</span>
+            </a>
+
+            <a class="link-card" href="/projects/integrate-and-fire-neuron-design/" data-reveal>
+              <span class="card-kicker">VLSI / EDA</span>
+              <h3>4-to-1 Integrate-and-Fire (IF) Neuron Design Using Cadence</h3>
+              <p class="project-meta">Jan 2025 – May 2025 · Arizona State University</p>
+              <div class="meta-tags">
+                <span class="meta-tag">Cadence</span>
+                <span class="meta-tag">HSPICE + StarRC</span>
+              </div>
+              <span class="arrow">View details →</span>
+            </a>
+
+            <a class="link-card" href="/projects/driver-distraction-drowsiness-detection/" data-reveal>
+              <span class="card-kicker">Real-Time Systems</span>
+              <h3>Driver Distraction &amp; Drowsiness Detection using In-Vehicle Signal Processing</h3>
+              <p class="project-meta">Jan 2024 – Aug 2024 · RV Institute of Technology and Management</p>
+              <div class="meta-tags">
+                <span class="meta-tag">Anomaly detection</span>
+                <span class="meta-tag">Closed-loop alerts</span>
+              </div>
+              <span class="arrow">View details →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="experience-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="experience-title">Experience that supports <span class="accent-text">hands-on engineering.</span></h2>
+              <p class="section-text">A focused experience section that highlights validation, debugging, and system reliability without overwhelming the reader.</p>
+            </div>
+            <a class="button-inline" href="/experience/">See experience →</a>
+          </div>
+
+          <div class="detail-grid">
+            <a class="detail-card" href="/experience/project-intern-drdo-cair/" data-reveal>
+              <span class="detail-kicker">Internship</span>
+              <h3>Project Intern · Centre for Artificial Intelligence &amp; Robotics, DRDO</h3>
+              <p class="project-meta">Sep 2023 – Nov 2023 · India · On-site</p>
+              <ul>
+                <li>Modeled, tested, and validated robotic subsystems using ROS2 and Gazebo.</li>
+                <li>Performed calibration and fine-tuning of multiple onboard sensors.</li>
+                <li>Analyzed deviations and implemented corrective algorithms using root-cause methodology.</li>
+              </ul>
+              <div class="badges">
+                <span class="badge">ROS2</span>
+                <span class="badge">Gazebo</span>
+                <span class="badge">System validation</span>
+              </div>
+              <span class="arrow">Open experience page →</span>
+            </a>
+
+            <div class="mini-card" data-reveal>
+              <span class="mini-icon">🛠️</span>
+              <h3>Engineering style</h3>
+              <p>I enjoy building systems that are clean, measurable, and practical — especially where embedded intelligence, signal processing, and validation meet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about" aria-labelledby="about-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="about-title">About me</h2>
+              <p class="section-text">A short introduction, education snapshot, and the themes that define your work.</p>
+            </div>
+          </div>
+
+          <div class="about-grid">
+            <div class="surface-card" style="padding: 24px; display: grid; gap: 18px; justify-items: center;" data-reveal>
+              <div class="avatar-badge" aria-hidden="true">AR</div>
+              <div class="badges">
+                <span class="badge">Embedded Systems</span>
+                <span class="badge">TinyML</span>
+                <span class="badge">Real-Time AI</span>
+              </div>
+            </div>
+
+            <div class="about-copy">
+              <div class="detail-section" data-reveal>
+                <p>I’m pursuing a Master’s in Electrical Engineering at Arizona State University. I’m passionate about embedded systems, real-time signal processing, and sensor-driven analytics. I enjoy building intelligent, low-latency systems that transform real-world signals into reliable, real-time decisions.</p>
+              </div>
+
+              <div class="education-grid">
+                <div class="timeline-card" data-reveal>
+                  <span class="detail-kicker">Education</span>
+                  <h3>Arizona State University</h3>
+                  <p>MSE, Electrical Engineering · 2025 – 2026</p>
+                  <p>Tempe, Arizona</p>
+                </div>
+                <div class="timeline-card" data-reveal>
+                  <span class="detail-kicker">Education</span>
+                  <h3>Visvesvaraya Technological University</h3>
+                  <p>B.E., Electronics &amp; Communications Engineering · 2020 – 2024</p>
+                  <p>Belagavi, India</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="skills-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="skills-title">Core skills</h2>
+              <p class="section-text">A scan-friendly list of the tools and concepts you want recruiters and collaborators to notice first.</p>
+            </div>
+          </div>
+
+          <div class="skill-grid">
+            <div class="skill-card" data-reveal>
+              <h3>Programming</h3>
+              <div class="skill-tags">
+                <span class="skill-tag">Python</span>
+                <span class="skill-tag">C</span>
+                <span class="skill-tag">C++</span>
+                <span class="skill-tag">MATLAB</span>
+                <span class="skill-tag">Verilog</span>
+              </div>
+            </div>
+            <div class="skill-card" data-reveal>
+              <h3>Machine Learning</h3>
+              <div class="skill-tags">
+                <span class="skill-tag">TensorFlow</span>
+                <span class="skill-tag">TFLite Micro</span>
+                <span class="skill-tag">Scikit-Learn</span>
+                <span class="skill-tag">MFCC</span>
+              </div>
+            </div>
+            <div class="skill-card" data-reveal>
+              <h3>Embedded / Real-Time</h3>
+              <div class="skill-tags">
+                <span class="skill-tag">Arduino Nano 33 BLE Sense</span>
+                <span class="skill-tag">ARM Cortex MCUs</span>
+                <span class="skill-tag">Sensor Integration</span>
+                <span class="skill-tag">Signal Processing</span>
+              </div>
+            </div>
+            <div class="skill-card" data-reveal>
+              <h3>VLSI / EDA</h3>
+              <div class="skill-tags">
+                <span class="skill-tag">Cadence Virtuoso</span>
+                <span class="skill-tag">HSPICE</span>
+                <span class="skill-tag">StarRC</span>
+                <span class="skill-tag">DRC / LVS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contact" aria-labelledby="contact-title">
+        <div class="container">
+          <div class="section-header" data-reveal>
+            <div>
+              <h2 class="section-title" id="contact-title">Contact me</h2>
+              <p class="section-text">Keep this section direct and friendly. Visitors can reach you by email, phone, LinkedIn, or the quick contact form below.</p>
+            </div>
+          </div>
+
+          <div class="contact-grid">
+            <div class="contact-stack">
+              <div class="contact-card" data-reveal>
+                <span class="detail-kicker">Get in touch</span>
+                <h3>Let’s build something useful.</h3>
+                <p>I’m interested in embedded systems, TinyML, real-time analytics, automation, and engineering roles where low-latency decision systems matter.</p>
+                <div class="badges">
+                  <span class="badge">Greater Phoenix Area</span>
+                  <span class="badge">Open to engineering conversations</span>
+                </div>
+              </div>
+
+              <div class="cta-grid">
+                <div class="contact-card" data-reveal>
+                  <span class="detail-kicker">Email</span>
+                  <h3><a href="mailto:aishwarya.hrao@outlook.com">aishwarya.hrao@outlook.com</a></h3>
+                  <p>Best for role discussions, collaborations, and interviews.</p>
+                </div>
+                <div class="contact-card" data-reveal>
+                  <span class="detail-kicker">LinkedIn</span>
+                  <h3><a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">linkedin.com/in/aishwaryahrao</a></h3>
+                  <p>Connect for networking and quick professional follow-ups.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-card" data-reveal>
+              <span class="detail-kicker">Quick message</span>
+              <h3>Send a short note</h3>
+              <p>This form opens your email app with the subject and message filled in.</p>
+              <form class="contact-form" data-contact-form data-to="aishwarya.hrao@outlook.com">
+                <div class="field">
+                  <label for="name">Your name</label>
+                  <input id="name" name="name" type="text" placeholder="Your name" required>
+                </div>
+                <div class="field">
+                  <label for="email">Your email</label>
+                  <input id="email" name="email" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field">
+                  <label for="subject">Subject</label>
+                  <input id="subject" name="subject" type="text" placeholder="Opportunity / collaboration / hello">
+                </div>
+                <div class="field">
+                  <label for="message">Message</label>
+                  <textarea id="message" name="message" rows="6" placeholder="Tell me a little about why you're reaching out." required></textarea>
+                </div>
+                <button class="button" type="submit">Open email draft</button>
+                <p class="form-note">Phone: <a href="tel:+14809602181">+1 (480) 960-2181</a></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>© <span data-year></span> Aishwarya Hareesh Rao. Built for Vercel and GitHub.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Hareesh_Rao_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

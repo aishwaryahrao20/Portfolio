@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio website for Aishwarya Hareesh Rao — embedded systems, TinyML, real-time signal processing, and intelligent engineering projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+
+  <title>Driver Distraction & Drowsiness Detection | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path>
+              <path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path>
+              <path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path>
+              <path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path>
+              <path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero">
+        <div class="container" data-reveal>
+          <a class="back-link" href="/projects/">← Back to projects</a>
+          <span class="eyebrow"><span class="eyebrow-dot"></span> Real-Time Monitoring</span>
+          <h1 class="detail-title">Driver Distraction &amp; Drowsiness Detection <span class="accent-text">using In-Vehicle Signal Processing</span></h1>
+          <p class="hero-text">A multi-sensor monitoring system that uses anomaly detection, event signatures, and control logic to support fast, reliable response.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container detail-layout">
+          <div class="detail-content">
+            <div class="detail-section" data-reveal>
+              <h2>Overview</h2>
+              <p>This project focused on extracting meaningful metrics from vehicle-related signals and translating them into a closed-loop alerting system for real-time monitoring.</p>
+            </div>
+
+            <div class="detail-section" data-reveal>
+              <h2>What I built</h2>
+              <ul>
+                <li>Built a multi-sensor monitoring system using anomaly detection and control logic, extracting metrics such as PERCLOS, EAR, and gaze deviation for real-time pattern detection.</li>
+                <li>Implemented time-series analysis and a closed-loop alert mechanism triggered by event signatures, demonstrating reliable fault monitoring and automated response logic.</li>
+              </ul>
+            </div>
+
+            <div class="detail-section" data-reveal>
+              <h2>Engineering focus</h2>
+              <ul>
+                <li>Combined sensing, analytics, and control behavior inside one practical workflow.</li>
+                <li>Used event-driven logic to convert detection into action.</li>
+                <li>Built a system that can be explained clearly to both technical and non-technical audiences.</li>
+              </ul>
+            </div>
+          </div>
+
+          <aside class="aside-stack">
+            <div class="detail-card" data-reveal>
+              <span class="detail-kicker">Project details</span>
+              <ul class="meta-list">
+                <li><strong>Duration:</strong> Jan 2024 – Aug 2024</li>
+                <li><strong>Associated with:</strong> RV Institute of Technology and Management</li>
+                <li><strong>Project type:</strong> Real-time signal processing</li>
+              </ul>
+            </div>
+
+            <div class="detail-card" data-reveal>
+              <span class="detail-kicker">Skills</span>
+              <div class="skill-tags">
+                <span class="skill-tag">Anomaly detection</span>
+                <span class="skill-tag">Real-time monitoring</span>
+                <span class="skill-tag">Time-series analysis</span>
+                <span class="skill-tag">Control loop logic</span>
+                <span class="skill-tag">Sensor analytics</span>
+              </div>
+            </div>
+
+            <div class="cta-card" data-reveal>
+              <span class="detail-kicker">Related</span>
+              <h3>Industry-facing experience</h3>
+              <p>Open the DRDO internship page to see debugging, calibration, and validation work.</p>
+              <a class="button-inline" href="/experience/project-intern-drdo-cair/">View experience →</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>© <span data-year></span> Aishwarya Hareesh Rao. Built for Vercel and GitHub.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Hareesh_Rao_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

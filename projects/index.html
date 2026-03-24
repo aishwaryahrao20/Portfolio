@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio website for Aishwarya Hareesh Rao — embedded systems, TinyML, real-time signal processing, and intelligent engineering projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+
+  <title>Projects | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path>
+              <path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path>
+              <path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path>
+              <path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path>
+              <path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="container" data-reveal>
+          <span class="eyebrow"><span class="eyebrow-dot"></span> Projects</span>
+          <h1 class="detail-title">Selected projects that combine <span class="accent-text">AI, signal processing, and hardware-aware design.</span></h1>
+          <p class="hero-text">Each title opens a dedicated page with the full description, skills, tools, and engineering decisions behind the work.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="card-grid">
+            <a class="link-card" href="/projects/audio-based-keyword-spotting/" data-reveal>
+              <span class="card-kicker">AI / ML · TinyML</span>
+              <h3>Audio-Based Keyword Spotting System Using TinyML</h3>
+              <p class="project-meta">Aug 2025 – Dec 2025 · Associated with Arizona State University</p>
+              <div class="meta-tags">
+                <span class="meta-tag">Embedded AI</span>
+                <span class="meta-tag">On-device inference</span>
+              </div>
+              <span class="arrow">Open project →</span>
+            </a>
+
+            <a class="link-card" href="/projects/integrate-and-fire-neuron-design/" data-reveal>
+              <span class="card-kicker">VLSI / EDA</span>
+              <h3>4-to-1 Integrate-and-Fire (IF) Neuron Design Using Cadence</h3>
+              <p class="project-meta">Jan 2025 – May 2025 · Associated with Arizona State University</p>
+              <div class="meta-tags">
+                <span class="meta-tag">Standard-cell layout</span>
+                <span class="meta-tag">Timing analysis</span>
+              </div>
+              <span class="arrow">Open project →</span>
+            </a>
+
+            <a class="link-card" href="/projects/driver-distraction-drowsiness-detection/" data-reveal>
+              <span class="card-kicker">Real-Time Monitoring</span>
+              <h3>Driver Distraction &amp; Drowsiness Detection using In-Vehicle Signal Processing</h3>
+              <p class="project-meta">Jan 2024 – Aug 2024 · Associated with RV Institute of Technology and Management</p>
+              <div class="meta-tags">
+                <span class="meta-tag">Anomaly detection</span>
+                <span class="meta-tag">Closed-loop alerts</span>
+              </div>
+              <span class="arrow">Open project →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>© <span data-year></span> Aishwarya Hareesh Rao. Built for Vercel and GitHub.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Hareesh_Rao_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
