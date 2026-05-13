@@ -14,13 +14,12 @@
       document.documentElement.dataset.theme = savedTheme || preferred;
     })();
   </script>
-  <title>Embedded TinyML Systems | Aishwarya Hareesh Rao</title>
+  <title>Embedded TinyML Inference Systems | Aishwarya Hareesh Rao</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="site-shell">
 
-    <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
     <header class="site-header">
       <div class="container site-header-inner">
         <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
@@ -55,28 +54,57 @@
       </div>
     </header>
 
-    <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
     <main id="main">
 
-      <!-- ─── SHARED HERO ─────────────────────────────────────────── -->
+      <!-- HERO -->
       <section class="detail-hero">
         <div class="container" data-reveal>
           <a class="back-link" href="/projects/">← Back to projects</a>
           <span class="eyebrow"><span class="eyebrow-dot"></span> AI / ML · TinyML · Embedded Systems</span>
-          <h1 class="detail-title">Embedded TinyML Systems <span class="accent-text">on Arduino Nano 33 BLE Sense</span></h1>
-          <p class="hero-text">Two end-to-end TinyML deployments on the same microcontroller — one that listens for spoken keywords, one that reads body motion — sharing a common embedded pipeline: sensor input → feature extraction → on-device neural inference → real-time output.</p>
+          <h1 class="detail-title">Embedded TinyML <span class="accent-text">Inference Systems</span></h1>
+          <p class="hero-text">Two sensor modalities — audio and motion — deployed as real-time, on-device neural classifiers on a single Arduino Nano 33 BLE Sense. No cloud. No host compute. Every inference decision made locally in milliseconds.</p>
         </div>
       </section>
 
-      <!-- ─── SHARED SIDEBAR + INTRO ─────────────────────────────── -->
       <section class="section">
         <div class="container detail-layout">
           <div class="detail-content">
 
             <div class="detail-section" data-reveal>
-              <h2>Platform & Shared Architecture</h2>
-              <p>Both projects run on the <strong>Arduino Nano 33 BLE Sense</strong> — a thumb-sized microcontroller with a 64 MHz Cortex-M4 core, 256 KB RAM, and an onboard sensor suite that includes a PDM microphone, a 6-axis IMU (BMI270), and a 3-axis magnetometer (BMM150). No cloud, no host compute — every inference decision is made on the device itself in milliseconds.</p>
-              <p>The pipeline architecture is identical across both projects: collect sensor data → extract compact numerical features → normalize → run a small neural network → emit a discrete prediction over serial. What changes is the sensor, the feature space, and the model topology.</p>
+              <h2>Overview</h2>
+              <p>This project covers the full TinyML development cycle — data collection, feature engineering, model training, and embedded deployment — applied across two distinct sensing domains on the same constrained hardware. A keyword spotter listens for five spoken commands via the onboard PDM microphone; a posture classifier reads body orientation from the IMU and magnetometer. Together they demonstrate that the same embedded ML pipeline adapts cleanly across fundamentally different sensor types and problem structures.</p>
+            </div>
+
+            <div class="detail-section" data-reveal>
+              <h2>What I Built</h2>
+              <ul>
+                <li>A real-time <strong>audio keyword spotter</strong> that recognizes five spoken commands — <em>all, must, none, never, only</em> — from a continuous microphone stream using a log-energy MLP deployed as a C header file with no runtime dependency.</li>
+                <li>A real-time <strong>body posture classifier</strong> that identifies five posture states — <em>Supine, Prone, Side, Sitting, Unknown</em> — from 100-sample IMU windows using three sensor-specific 1D-CNNs hot-swapped at runtime via TFLite Micro.</li>
+                <li>End-to-end Python pipelines for both: data collection scripts, feature extraction, normalization, model training with evaluation metrics, and automated export to embedded-ready formats (C header and TFLite binary).</li>
+              </ul>
+            </div>
+
+            <div class="detail-section" data-reveal>
+              <h2>Pipeline</h2>
+              <p>Both systems follow the same four-stage embedded ML pipeline, with each stage adapted to the sensor at hand.</p>
+
+              <p><strong>1. Data Collection.</strong> Audio clips were recorded as 1-second WAV files at 16 kHz, organized into keyword-named folders for automatic label inference. IMU data was streamed over serial at 115200 baud and logged as 10-column CSVs (<code>t, ax, ay, az, gx, gy, gz, mx, my, mz</code>), with posture labels encoded in the filename.</p>
+
+              <p><strong>2. Feature Extraction.</strong> For audio, each clip is segmented into 101 frames and converted to a log-energy feature — <code>log(1 + mean|x|)</code> per frame — replicated across 13 dimensions to produce a (101 × 13) tensor. For motion, raw 3-axis sensor values are segmented into 100-sample sliding windows (50% overlap) yielding (100 × 3) tensors, one per sensor type.</p>
+
+              <p><strong>3. Training &amp; Evaluation.</strong> The audio classifier uses a three-layer MLP (Flatten → Dense 64 → Dense 64 → Dense 5) optimized for minimal FLOP count. The posture classifier uses a 1D-CNN (Conv1D 16 → Conv1D 32 → GlobalAvgPool → Dense 32 → Dense 5) to exploit the temporal shape of inertial signals, with three independently trained models — one per sensor modality. Both were evaluated with per-class precision, recall, and F1-score.</p>
+
+              <p><strong>4. Embedded Deployment.</strong> The audio model weights are exported as a C header (<code>keyword_linear_model.h</code>) with training-set normalization statistics embedded alongside — no runtime interpreter needed. The three posture models are converted to TFLite flat-buffers and compiled into the Arduino sketch as C arrays; the ArduTFLite library loads the correct model into a 32 KB tensor arena based on the user's sensor selection.</p>
+            </div>
+
+            <div class="detail-section" data-reveal>
+              <h2>Engineering Focus</h2>
+              <ul>
+                <li><strong>Hardware-aware feature design.</strong> Log-energy was chosen over MFCC for audio because it cuts per-frame compute by ~80% while retaining enough spectral envelope for a five-class vocabulary. Raw IMU windows were used directly for motion because the convolutional filters learn the relevant temporal patterns without a handcrafted transform.</li>
+                <li><strong>Deployment path matched to problem structure.</strong> A single audio model with no runtime fits cleanly into a custom C header. Three posture models that need runtime hot-swapping are better served by the TFLite interpreter, which handles model loading and tensor arena management cleanly.</li>
+                <li><strong>Normalization parity.</strong> Training-set statistics (mean, std) are exported and hard-coded on the device for both systems. Even small drift between training and inference normalization silently degrades accuracy — exporting them explicitly eliminates that risk.</li>
+                <li><strong>50% window overlap for motion data.</strong> Doubles the number of training samples from the same recording sessions without additional data collection — a practical augmentation for resource-limited embedded datasets.</li>
+              </ul>
             </div>
 
           </div>
@@ -87,13 +115,13 @@
               <ul class="meta-list">
                 <li><strong>Duration:</strong> Aug – Dec 2025</li>
                 <li><strong>Associated with:</strong> Arizona State University</li>
-                <li><strong>Platform:</strong> Arduino Nano 33 BLE Sense</li>
-                <li><strong>Projects:</strong> 2 (audio + motion)</li>
+                <li><strong>Hardware:</strong> Arduino Nano 33 BLE Sense</li>
+                <li><strong>Modalities:</strong> Audio · IMU · Magnetometer</li>
               </ul>
             </div>
 
             <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Shared Skills</span>
+              <span class="detail-kicker">Skills</span>
               <div class="skill-tags">
                 <span class="skill-tag">TinyML</span>
                 <span class="skill-tag">Embedded AI</span>
@@ -101,348 +129,17 @@
                 <span class="skill-tag">TensorFlow / Keras</span>
                 <span class="skill-tag">TFLite Micro</span>
                 <span class="skill-tag">Arduino C++</span>
-                <span class="skill-tag">Model Optimization</span>
                 <span class="skill-tag">Signal Processing</span>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-
-      <!-- ═══════════════════════════════════════════════════════════
-           PROJECT 1 — KEYWORD SPOTTING
-      ════════════════════════════════════════════════════════════════ -->
-      <section class="section">
-        <div class="container" data-reveal>
-          <span class="eyebrow"><span class="eyebrow-dot"></span> Project 1 of 2 · Audio</span>
-          <h2 class="detail-title" style="margin-top: 0.4rem;">On-Device Keyword Spotting <span class="accent-text">via Log-Energy MLP</span></h2>
-        </div>
-
-        <div class="container detail-layout">
-          <div class="detail-content">
-
-            <div class="detail-section" data-reveal>
-              <h2>What It Does</h2>
-              <p>A real-time speech command recognizer that detects five absolutist keywords — <em>"all," "must," "none," "never,"</em> and <em>"only"</em> — from a continuous microphone stream on the Arduino, with no host processor or network required. The entire recognition pipeline, from raw PCM samples to a predicted class label, runs in under 50 ms.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Dataset & Collection</h2>
-              <p>A custom dataset of 250+ labeled 1-second WAV clips was collected across five recording experiments, capturing different speakers, distances, and acoustic environments. Clips were organized into keyword-named directories so the training pipeline could infer labels from folder names automatically. An OGG-to-WAV utility (<code>convert_ogg_wav.py</code>) standardized all audio to 16 kHz mono before any processing began.</p>
-              <p>The full dataset was randomly shuffled and split 80 / 10 / 10 into train, validation, and test subsets with stratification to maintain per-class balance. Oversampling on the training split corrected any class imbalance identified during the initial data audit.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Feature Extraction — Log-Energy Frames</h2>
-              <p>Instead of full MFCC computation, a lightweight log-energy feature was designed to mirror what the Arduino's Cortex-M4 can compute between audio interrupts. Each clip is segmented into 101 frames; per frame, the mean absolute amplitude is log-transformed:</p>
-              <blockquote>
-                <strong>E<sub>t</sub></strong> = mean(|x<sub>k</sub>|) &nbsp;⟶&nbsp; <strong>X<sub>t</sub></strong> = log(1 + E<sub>t</sub>)
-              </blockquote>
-              <p>This scalar is replicated across 13 feature dimensions, producing a <code>(101 × 13)</code> tensor — exactly matching the <code>kFeatureTimeSteps × kFeatureDim</code> constants in the Arduino sketch. A global RMS normalization step (target RMS = 0.10, max gain capped at 12×) runs before framing to prevent loud recordings from skewing the feature distribution. Z-score normalization statistics (per-feature mean and std) computed on the training set only are exported with the model so on-device preprocessing matches training exactly.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Model — Three-Layer MLP</h2>
-              <p>The classifier is a compact Multi-Layer Perceptron chosen for minimal FLOP count and simple matrix-multiply operations that map well to embedded arithmetic:</p>
-              <ul>
-                <li><strong>Flatten:</strong> (101 × 13) → 1,313-element vector.</li>
-                <li><strong>Dense 64 + ReLU</strong> — first hidden layer.</li>
-                <li><strong>Dense 64 + ReLU</strong> — second hidden layer.</li>
-                <li><strong>Dense 5 (logits)</strong> — one score per keyword; argmax at inference.</li>
-              </ul>
-              <p>Trained for 25 epochs with Adam (lr = 1e-3), batch size 64, and sparse categorical cross-entropy loss. Evaluation used per-class precision, recall, F1-score, and a confusion matrix to identify inter-keyword confusions.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Embedded Deployment — C Header Export</h2>
-              <p>After training, the Keras weight matrices were transposed to C row-major layout <code>[output][input]</code> and serialized — together with normalization statistics — into a single header file <code>keyword_linear_model.h</code>. The Arduino sketch (<code>NanoKeywordDemo.ino</code>) includes this header and executes the full forward pass:</p>
-              <ol>
-                <li>Capture 1-second PDM audio frame.</li>
-                <li>Compute per-frame log-energy features (101 × 13).</li>
-                <li>Apply z-score normalization using exported <code>kFeatMean</code> / <code>kFeatStd</code>.</li>
-                <li>Three dense layer multiplications with ReLU gates.</li>
-                <li>Argmax over logits → keyword label emitted over Serial.</li>
-              </ol>
-              <p>A parallel TFLite path was also produced (<code>keyword_model.tflite</code> + <code>keyword_cnn_energy.h5</code>) to compare the custom header inference route against the standard TFLite Micro runtime.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Key Engineering Decisions</h2>
-              <ul>
-                <li><strong>Log-energy over MFCC:</strong> cuts per-frame compute by ~80% while retaining sufficient spectral envelope information for the narrow five-class vocabulary.</li>
-                <li><strong>MLP over CNN:</strong> eliminates the sliding convolution kernel, which is expensive on a device without SIMD audio extensions.</li>
-                <li><strong>C header over TFLite runtime:</strong> removes the TFLite Micro interpreter overhead (~8 KB RAM) and produces a single, auditable, dependency-free inference file.</li>
-                <li><strong>Normalization parity:</strong> exporting training-set statistics ensures the device sees the same input distribution the model was trained on — critical for avoiding silent accuracy degradation at deployment.</li>
-              </ul>
-            </div>
-
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Project 1 · Skills</span>
-              <div class="skill-tags">
-                <span class="skill-tag">Audio DSP</span>
-                <span class="skill-tag">Log-Energy Feature Extraction</span>
-                <span class="skill-tag">MLP / Dense Networks</span>
-                <span class="skill-tag">C Header Export</span>
-                <span class="skill-tag">PDM Microphone</span>
-                <span class="skill-tag">Scikit-learn Metrics</span>
-                <span class="skill-tag">Librosa</span>
-                <span class="skill-tag">SoundFile</span>
+                <span class="skill-tag">1D-CNN</span>
+                <span class="skill-tag">Feature Extraction</span>
+                <span class="skill-tag">Model Optimization</span>
               </div>
             </div>
 
-          </div>
-
-          <aside class="aside-stack">
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Project 1 at a glance</span>
-              <ul class="meta-list">
-                <li><strong>Sensor:</strong> Onboard PDM microphone</li>
-                <li><strong>Keywords:</strong> all, must, none, never, only</li>
-                <li><strong>Dataset:</strong> 250+ custom WAV clips</li>
-                <li><strong>Feature:</strong> Log-energy (101 × 13)</li>
-                <li><strong>Model:</strong> MLP — Flatten → 64 → 64 → 5</li>
-                <li><strong>Deployment:</strong> C header (no runtime)</li>
-                <li><strong>Inference:</strong> &lt; 50 ms on-device</li>
-              </ul>
-            </div>
-
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Key Files</span>
-              <ul class="meta-list">
-                <li><code>TinyML_Project.ipynb</code> — full training notebook</li>
-                <li><code>NanoKeywordDemo.ino</code> — Arduino inference sketch</li>
-                <li><code>keyword_linear_model.h</code> — exported C weights</li>
-                <li><code>keyword_model.tflite</code> — TFLite binary</li>
-                <li><code>convert_ogg_wav.py</code> — audio preprocessing utility</li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-
-      <!-- ═══════════════════════════════════════════════════════════
-           PROJECT 2 — POSTURE CLASSIFICATION
-      ════════════════════════════════════════════════════════════════ -->
-      <section class="section">
-        <div class="container" data-reveal>
-          <span class="eyebrow"><span class="eyebrow-dot"></span> Project 2 of 2 · Motion / IMU</span>
-          <h2 class="detail-title" style="margin-top: 0.4rem;">Real-Time Posture Classification <span class="accent-text">via IMU-Driven 1D-CNN</span></h2>
-        </div>
-
-        <div class="container detail-layout">
-          <div class="detail-content">
-
-            <div class="detail-section" data-reveal>
-              <h2>What It Does</h2>
-              <p>A body-posture classifier that reads raw inertial and magnetic field data from the Arduino's onboard IMU and predicts one of five postures — <em>Supine, Prone, Side, Sitting,</em> or <em>Unknown</em> — in real time. Three independent sensor-specific models (accelerometer, gyroscope, magnetometer) are stored on the device simultaneously; the user selects which sensor stream to use for each inference query over serial.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Data Collection</h2>
-              <p>Raw IMU data was logged from the Arduino via a Python base station (<code>base_station.py</code> and <code>logger_stop_on_enter.py</code>) that opened a serial connection at 115200 baud and streamed 10-column CSV rows:</p>
-              <blockquote>
-                t, ax, ay, az, gx, gy, gz, mx, my, mz
-              </blockquote>
-              <p>Each CSV file was named to embed its posture label — e.g., <code>supine_trial1.csv</code>, <code>prone_accel.csv</code> — so the dataset builder could infer the ground-truth class from the filename automatically, without a separate annotation file.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Dataset Engineering — Sliding Windows</h2>
-              <p>The dataset builder (<code>build_dataset.py</code>) scanned all raw CSVs and separated each recording into three sensor channels. For each channel, a sliding window approach converted the continuous time-series into fixed-length training samples:</p>
-              <ul>
-                <li><strong>Window size:</strong> 100 samples (~2 seconds at 50 Hz)</li>
-                <li><strong>Stride:</strong> 50 samples (50% overlap for data augmentation)</li>
-                <li><strong>Shape per window:</strong> (100 × 3) — 100 time steps × 3 axis values</li>
-              </ul>
-              <p>This produced three independent <code>.npz</code> datasets — <code>dataset_accel.npz</code>, <code>dataset_gyro.npz</code>, <code>dataset_mag.npz</code> — each containing an <code>X</code> array of shape <code>(N, 100, 3)</code> and a label vector <code>y</code> with integer values 1–5. The split was 70 / 15 / 15 (train / val / test) with stratification per posture class.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Normalization — Per-Sensor, Train-Only</h2>
-              <p>Each sensor occupies a completely different physical scale (g-forces vs °/s vs µT), so normalization is computed independently per sensor type. Channel-wise mean and standard deviation are calculated on the training split only, then saved to <code>norm_stats_{sensor}.npz</code>. The same statistics are hard-coded as float arrays in the Arduino sketch:</p>
-              <ul>
-                <li><code>kMean_accel</code> / <code>kStd_accel</code> — for accelerometer windows</li>
-                <li><code>kMean_gyro</code> / <code>kStd_gyro</code> — for gyroscope windows</li>
-                <li><code>kMean_mag</code> / <code>kStd_mag</code> — for magnetometer windows</li>
-              </ul>
-              <p>The active pointer (<code>kMean</code>, <code>kStd</code>) is switched at model-load time to match whichever sensor the user selected, ensuring normalization is always paired with the correct model.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Model — Sensor-Specific 1D-CNNs</h2>
-              <p>A lightweight 1D convolutional architecture was chosen over an MLP here because posture patterns manifest as temporal shape in the sensor signal — a pattern CNNs exploit naturally. Each of the three sensor datasets gets its own trained model:</p>
-              <ul>
-                <li><strong>Conv1D (16 filters, kernel 5) + ReLU</strong> — captures local motion patterns.</li>
-                <li><strong>Conv1D (32 filters, kernel 5) + ReLU</strong> — learns higher-order temporal abstractions.</li>
-                <li><strong>GlobalAveragePooling1D</strong> — aggregates across the time axis; no fixed-length flattening required.</li>
-                <li><strong>Dense 32 + ReLU</strong> — compact intermediate representation.</li>
-                <li><strong>Dense 5 + Softmax</strong> — probability over the five posture classes.</li>
-              </ul>
-              <p>All three models were trained with Adam (lr = 1e-3), sparse categorical cross-entropy, up to 100 epochs with early stopping on validation accuracy (patience = 10) to prevent overfitting on the limited dataset. Performance was evaluated with per-class precision, recall, F1, and confusion matrices to identify which postures and which sensors were most discriminative.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>TFLite Conversion & C Header Generation</h2>
-              <p>The trained Keras models were converted to TFLite flat-buffer format via a concrete-function converter (<code>convert_to_tflite.py</code>) keeping pure float32 operations — no quantization — to maintain accuracy without the quantization-calibration step. Each <code>.tflite</code> binary was then serialized into a C header as a <code>const unsigned char[]</code> array, producing:</p>
-              <ul>
-                <li><code>posture_model_accel_data.h</code></li>
-                <li><code>posture_model_gyro_data.h</code></li>
-                <li><code>posture_model_mag_data.h</code></li>
-              </ul>
-              <p>All three headers are compiled into the same Arduino sketch, and the correct model is loaded into the 32 KB TFLite tensor arena at runtime using <code>modelInit()</code> from the ArduTFLite library.</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Arduino Inference Sketch</h2>
-              <p>The sketch (<code>posture_inference.ino</code>) exposes a simple serial menu. On each request:</p>
-              <ol>
-                <li>User sends <code>'1'</code>, <code>'2'</code>, or <code>'3'</code> to select accelerometer, gyroscope, or magnetometer.</li>
-                <li>The corresponding TFLite model is loaded into the tensor arena (skipped if already loaded).</li>
-                <li>100 IMU samples are collected at ~50 Hz into a <code>float window_buf[100][3]</code>.</li>
-                <li>Each sample is z-score normalized in-place using the sensor's hard-coded mean/std.</li>
-                <li><code>modelRunInference()</code> runs the TFLite graph; per-class probabilities are read with <code>modelGetOutput()</code>.</li>
-                <li>The argmax label and confidence are sent back as a <code>PRED,label,prob</code> line that the Python base station parses and prints as a human-readable posture name.</li>
-              </ol>
-              <p>The Python base station (<code>base_station.py</code>) auto-detects the Arduino's serial port, presents the same sensor menu interactively, and translates the numeric label into its string name (Supine, Prone, Side, Sitting, Unknown).</p>
-            </div>
-
-            <div class="detail-section" data-reveal>
-              <h2>Key Engineering Decisions</h2>
-              <ul>
-                <li><strong>Three separate models instead of one:</strong> each sensor has distinct statistical properties and temporal dynamics. Training sensor-specific models avoids cross-sensor noise and lets each model specialize.</li>
-                <li><strong>1D-CNN over MLP for motion:</strong> posture is encoded in the temporal shape of the signal (e.g., gravity vector direction for accelerometer). Convolutional filters extract that shape directly; a flat MLP would need to learn it implicitly from 300 inputs.</li>
-                <li><strong>TFLite + ArduTFLite over raw C headers:</strong> unlike the keyword project, three models must coexist and be hot-swapped at runtime. The TFLite interpreter handles this gracefully; hand-writing three forward-pass C functions would be error-prone and inflexible.</li>
-                <li><strong>50% window overlap:</strong> effectively doubles the training data from the same recorded sessions, improving generalization without requiring additional recording time.</li>
-                <li><strong>Global average pooling:</strong> produces a fixed-length representation regardless of window variation, and has zero learnable parameters — reducing model size.</li>
-              </ul>
-            </div>
-
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Project 2 · Skills</span>
-              <div class="skill-tags">
-                <span class="skill-tag">IMU Signal Processing</span>
-                <span class="skill-tag">Sliding Window Segmentation</span>
-                <span class="skill-tag">1D Convolutional Networks</span>
-                <span class="skill-tag">TFLite Conversion</span>
-                <span class="skill-tag">ArduTFLite</span>
-                <span class="skill-tag">Serial Communication</span>
-                <span class="skill-tag">BMI270 / BMM150 IMU</span>
-                <span class="skill-tag">Multi-Model Inference</span>
-              </div>
-            </div>
-
-          </div>
-
-          <aside class="aside-stack">
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Project 2 at a glance</span>
-              <ul class="meta-list">
-                <li><strong>Sensors:</strong> Accel · Gyro · Magnetometer</li>
-                <li><strong>Classes:</strong> Supine, Prone, Side, Sitting, Unknown</li>
-                <li><strong>Window:</strong> 100 samples @ ~50 Hz (~2 s)</li>
-                <li><strong>Feature:</strong> Raw (100 × 3) windows</li>
-                <li><strong>Model:</strong> 1D-CNN × 3 (sensor-specific)</li>
-                <li><strong>Deployment:</strong> TFLite + ArduTFLite runtime</li>
-                <li><strong>Control:</strong> Python base station over Serial</li>
-              </ul>
-            </div>
-
-            <div class="detail-card" data-reveal>
-              <span class="detail-kicker">Key Files</span>
-              <ul class="meta-list">
-                <li><code>build_dataset.py</code> — CSV → windowed .npz</li>
-                <li><code>train_model.py</code> — sensor-specific CNN training</li>
-                <li><code>convert_to_tflite.py</code> — Keras → TFLite → C header</li>
-                <li><code>posture_inference.ino</code> — Arduino inference sketch</li>
-                <li><code>base_station.py</code> — Python serial controller</li>
-                <li><code>compute_norm.py</code> — normalization stats export</li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-
-      <!-- ─── SIDE-BY-SIDE COMPARISON ────────────────────────────── -->
-      <section class="section">
-        <div class="container" data-reveal>
-          <h2 class="detail-title" style="font-size: clamp(1.4rem, 3vw, 2rem);">How the Two Projects Compare</h2>
-          <p style="max-width: 60ch; margin-bottom: 2rem;">Same board, same deployment philosophy — different sensors, features, and models, each chosen deliberately for the problem at hand.</p>
-
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
-              <thead>
-                <tr style="border-bottom: 2px solid currentColor; opacity: 0.9;">
-                  <th style="text-align: left; padding: 0.6rem 1rem; font-weight: 600;"></th>
-                  <th style="text-align: left; padding: 0.6rem 1rem; font-weight: 600;">Keyword Spotting</th>
-                  <th style="text-align: left; padding: 0.6rem 1rem; font-weight: 600;">Posture Classification</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Sensor</td>
-                  <td style="padding: 0.55rem 1rem;">PDM Microphone</td>
-                  <td style="padding: 0.55rem 1rem;">BMI270 IMU + BMM150 Magnetometer</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Input</td>
-                  <td style="padding: 0.55rem 1rem;">Audio waveform @ 16 kHz</td>
-                  <td style="padding: 0.55rem 1rem;">3-axis IMU @ ~50 Hz</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Feature</td>
-                  <td style="padding: 0.55rem 1rem;">Log-energy frames (101 × 13)</td>
-                  <td style="padding: 0.55rem 1rem;">Raw sliding windows (100 × 3)</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Model</td>
-                  <td style="padding: 0.55rem 1rem;">MLP (64 → 64 → 5)</td>
-                  <td style="padding: 0.55rem 1rem;">1D-CNN (Conv→Conv→GAP→Dense→5) × 3</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Deployment</td>
-                  <td style="padding: 0.55rem 1rem;">Custom C header (no runtime)</td>
-                  <td style="padding: 0.55rem 1rem;">TFLite Micro via ArduTFLite</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(127,127,127,0.2);">
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Output classes</td>
-                  <td style="padding: 0.55rem 1rem;">5 keywords</td>
-                  <td style="padding: 0.55rem 1rem;">5 postures</td>
-                </tr>
-                <tr>
-                  <td style="padding: 0.55rem 1rem; font-weight: 600; opacity: 0.7;">Models on device</td>
-                  <td style="padding: 0.55rem 1rem;">1</td>
-                  <td style="padding: 0.55rem 1rem;">3 (hot-swapped at runtime)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- ─── CTA / NEXT PROJECT ─────────────────────────────────── -->
-      <section class="section">
-        <div class="container detail-layout">
-          <div class="detail-content">
-            <div class="detail-section" data-reveal>
-              <h2>Engineering Takeaways</h2>
-              <ul>
-                <li>The choice of deployment path (C header vs TFLite runtime) should be driven by how many models need to coexist on the device and whether dynamic model loading is required.</li>
-                <li>Feature engineering for embedded targets is a hardware-aware problem: the right feature is the most compact one that preserves the information the classifier needs, computed within the interrupt budget.</li>
-                <li>Sensor-specific normalization must be computed on training data and exported precisely — even small mismatches between training and inference statistics can silently degrade accuracy without triggering any error.</li>
-                <li>Sliding window overlap is a cheap data augmentation technique for time-series that can meaningfully improve generalization when labeled data is scarce.</li>
-              </ul>
-            </div>
-          </div>
-
-          <aside class="aside-stack">
             <div class="cta-card" data-reveal>
               <span class="detail-kicker">Next</span>
               <h3>Want to see the VLSI side?</h3>
-              <p>Open the integrate-and-fire neuron design project for layout, parasitics, and timing analysis.</p>
+              <p>Open the neuron design project for layout, parasitics, and timing analysis.</p>
               <a class="button-inline" href="/projects/integrate-and-fire-neuron-design/">View next project →</a>
             </div>
           </aside>
@@ -451,7 +148,6 @@
 
     </main>
 
-    <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
     <footer class="site-footer">
       <div class="container">
         <div class="footer-bar">
