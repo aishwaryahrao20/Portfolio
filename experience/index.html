@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio website for Aishwarya Hareesh Rao - embedded systems, firmware, TinyML, edge AI, real-time signal processing, and VLSI design.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>Experience | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="container" data-reveal>
+          <span class="eyebrow"><span class="eyebrow-dot"></span> Experience</span>
+          <h1 class="detail-title">Work experience focused on <span class="accent-text">multi-sensor robotics, simulation, and real-time perception.</span></h1>
+          <p class="hero-text">A concise role summary with a full detail page for the DRDO CAIR internship.</p>
+        </div>
+      </section>
+      <section class="section"><div class="container"><div class="detail-grid">
+        <a class="detail-card" href="/experience/project-intern-drdo-cair/" data-reveal>
+          <span class="detail-kicker">Project Intern</span>
+          <h3>Center for Artificial Intelligence and Robotics (DRDO)</h3>
+          <p class="project-meta">Sep 2023 - Nov 2023 - Bangalore, India</p>
+          <ul>
+            <li>Developed a multi-sensor fusion pipeline for autonomous ground vehicle object detection using LiDAR, RGB-D camera, and Radar data streams.</li>
+            <li>Built and validated custom UGV simulation environments in Gazebo with Blender-designed 3D robot models.</li>
+            <li>Implemented ROS2 synchronization across LiDAR, camera, and radar modalities using tf2 transforms and topic-level message filtering.</li>
+          </ul>
+          <div class="badges"><span class="badge">ROS2</span><span class="badge">Gazebo</span><span class="badge">rviz</span><span class="badge">Sensor Fusion</span></div>
+          <span class="arrow">Open role &rarr;</span>
+        </a>
+        <div class="mini-card" data-reveal><span class="mini-icon">UGV</span><h3>Experience theme</h3><p>Robotics work that connects simulated test environments, sensor streams, time-aligned data, and real-time visualization.</p></div>
+      </div></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
