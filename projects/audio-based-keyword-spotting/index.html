@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TinyML Keyword Spotting System – absolutist language detection on Arduino Nano 33 BLE Sense with 83% validation accuracy, 7-stage DSP firmware pipeline, and custom C-weight MLP inference deployed on ARM Cortex-M4.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>Audio-Based Keyword Spotting | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> TinyML · Audio DSP · Edge Inference · ARM Cortex-M4 · Embedded Systems</span>
+        <h1 class="detail-title">TinyML Keyword Spotting System <span class="accent-text">for Absolutist Language Detection</span></h1>
+        <p class="hero-text">A complete end-to-end TinyML pipeline deployed on an Arduino Nano 33 BLE Sense — detecting five absolutist language keywords (<em>never, none, all, must, only</em>) from real-time audio using a 7-stage DSP firmware pipeline, an 88,581-parameter MLP trained on 5,775 samples from three merged datasets, and a custom C-weight inference engine achieving 83% validation accuracy and 78–83% real-time embedded accuracy at under 100 ms latency.</p>
+      </div></section>
+
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+
+        <div class="detail-section" data-reveal>
+          <h2>Overview</h2>
+          <p>Research has shown that absolutist language — words like "never," "none," "all," "must," and "only" — appears approximately 50% more frequently in anxiety and depression communities than in control forums, making these terms candidate markers for passive ambient mental-health monitoring. This project explores whether a low-power embedded system can reliably spot these keywords in real time, without cloud dependency or a persistent network connection.</p>
+          <p>The system runs entirely on an Arduino Nano 33 BLE Sense Rev2 (ARM Cortex-M4F @ 64 MHz, 256 KB RAM, onboard PDM microphone). Rather than using the TFLite Micro interpreter, the trained model's weights are exported as a C header file and the forward pass is hand-implemented in Arduino firmware — giving full control over memory layout and arithmetic without interpreter overhead. The full pipeline covers dataset construction from three merged sources, log-energy feature extraction, MLP training with oversampling, and a seven-stage noise-robust DSP preprocessing chain implemented directly in firmware.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Dataset construction</h2>
+          <p>Three separate audio datasets were merged to create a robust training corpus of 5,775 samples across five keyword classes.</p>
+          <ul>
+            <li><strong>Google Speech Commands Dataset:</strong> Large-scale keyword audio baseline providing substantial coverage for common words and establishing acoustic diversity.</li>
+            <li><strong>ASU Embedded Machine Learning Audio Dataset:</strong> A curated dataset aligned to the five target absolutist keywords, providing domain-specific coverage.</li>
+            <li><strong>Manually recorded data (experiment 5/):</strong> A minimum of 50 recordings per keyword (250+ total samples) collected personally using the Open Speech Recorder tool and converted from .ogg to .wav using a custom Python script (<code>convert_ogg_wav.py</code>).</li>
+          </ul>
+          <p>Final class counts after merging: <em>all</em> — 1,090; <em>never</em> — 1,178; <em>none</em> — 1,211; <em>only</em> — 1,074; <em>must</em> — 1,222. Total: 5,775 samples. The dataset was split 80/10/10 into train (4,620), validation (577), and test (578) sets. To address class imbalance, the training set was balanced by random oversampling to 993 examples per class, producing a balanced training tensor of shape (4,965 × 101 × 13).</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Feature extraction — log-energy frames</h2>
+          <p>Each audio file is loaded at 16 kHz, converted to mono, and padded or trimmed to exactly 16,000 samples (1 second). Rather than computing a full MFCC spectrogram, a lightweight log-energy feature is extracted to match the strict RAM budget of the Cortex-M4. The waveform is divided into 101 overlapping frames; for each frame, a single log-energy value is computed as:</p>
+          <p><code>f_t = log(1 + mean(|x|))</code></p>
+          <p>All 13 input features per frame are filled with the same log-energy value, producing a (101 × 13) feature matrix per clip — a 1,313-dimensional input after flattening. This design keeps the feature tensor small enough for on-device extraction and inference within 256 KB RAM. Normalization statistics computed from the balanced training set (μ = 0.04995788, σ = 0.05632823) are embedded directly into the Arduino firmware for consistent inference-time z-score normalization.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Neural network architecture and training</h2>
+          <p>A compact 3-layer Multi-Layer Perceptron (MLP) was chosen over a CNN to minimize parameter count and enable full weight export as a C array for manual firmware inference. The architecture processes the flattened 1,313-dimensional input through two ReLU hidden layers before outputting logits over five keyword classes:</p>
+          <ul>
+            <li>Flatten → (1,313)</li>
+            <li>Dense(64, ReLU) — 84,096 parameters</li>
+            <li>Dense(64, ReLU) — 4,160 parameters</li>
+            <li>Dense(5, logits) — 325 parameters</li>
+            <li>Total: 88,581 parameters</li>
+          </ul>
+          <p>Trained with Adam optimizer and sparse categorical cross-entropy loss for 25 epochs at batch size 64 on the balanced, z-score-normalized training set. The forward pass (h₁ = ReLU(W₁x + b₁), h₂ = ReLU(W₂h₁ + b₂), z = W₃h₂ + b₃) is re-implemented exactly in Arduino C firmware using the exported weight arrays, with weights transposed to the [output][input] layout expected by the hand-coded matrix multiply.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Firmware DSP pipeline (7 stages)</h2>
+          <p>The Arduino inference sketch implements a seven-stage audio preprocessing chain before running inference, designed to be noise-robust under real-world microphone conditions at PDM gain = 75.</p>
+          <ul>
+            <li><strong>DC offset removal:</strong> Computes the mean of all 16,000 samples and subtracts it from each sample. Observed DC offsets ranged ±2,000 in testing.</li>
+            <li><strong>High-pass filter (α = 0.997):</strong> Single-pole IIR: y[n] = 0.997 × (y[n−1] + x[n] − x[n−1]) — removes slow DC drift while preserving speech content.</li>
+            <li><strong>Low-pass filter (α = 0.80):</strong> Single-pole IIR: y[n] = 0.80 × y[n−1] + 0.20 × x[n] — suppresses high-frequency noise.</li>
+            <li><strong>Hard noise gate (threshold = 400):</strong> Samples with |x| &lt; 400 are zeroed — eliminates low-level ambient noise between speech events.</li>
+            <li><strong>Silence detection:</strong> A clip is rejected if mean(|x|) &lt; 0.001 — prevents silent frames from passing to inference.</li>
+            <li><strong>RMS-based loudness normalization (target RMS = 0.10):</strong> scale = 0.10 / RMS, clamped to [0.5, 15]. Observed scale factors: 4.376 and 9.790 — normalizes loudness variation across speakers.</li>
+            <li><strong>Log-energy feature extraction:</strong> 101 frame-level log-energy values computed as f_t = log(1 + mean(|x|)), matching the training-side feature pipeline exactly.</li>
+          </ul>
+          <p>Three inference-time enhancements further stabilize predictions: exponential moving average smoothing (p′ᵢ = 0.85 × p′ᵢ + 0.15 × pᵢ), class-specific bias correction offsets, and a detection threshold of p &gt; 0.08. SNR estimation based on the ratio of the loudest-25% to quietest-25% frames produces values of ~24.7–25.9 dB, indicating a stable noise floor.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Measured outcomes</h2>
+          <ul>
+            <li>Achieved 83% validation accuracy across 5 absolutist keyword classes by training an 88,581-parameter MLP on 5,775 samples merged from three datasets (Google Speech Commands, ASU EML Audio Dataset, and 250+ manually recorded samples), with per-class F1 scores of 0.87 (must), 0.85 (never), 0.85 (only), 0.81 (none), and 0.78 (all) — measured on a held-out 578-sample test split.</li>
+            <li>Achieved 78–83% real-time embedded accuracy at under 100 ms inference latency by hand-implementing the MLP forward pass as a custom C matrix-multiply in Arduino firmware using exported weight arrays — bypassing the TFLite Micro interpreter overhead entirely, validated by live serial output across multiple keyword test utterances at 10–20 cm from the microphone.</li>
+            <li>Enabled noise-robust on-device inference under real-world conditions by implementing a 7-stage DSP preprocessing chain (DC offset removal, high-pass α=0.997, low-pass α=0.80, hard noise gate at threshold 400, silence detection, RMS normalization to target 0.10, and log-energy extraction) followed by EMA probability smoothing (α=0.85) and class-specific bias correction — maintaining consistent SNR estimates of 24.7–25.9 dB across test utterances.</li>
+            <li>Reduced training-set class imbalance impact by oversampling minority classes to 993 examples each (balanced shape: 4,965 × 101 × 13), then applying z-score normalization with training-set statistics (μ=0.04996, σ=0.05633) embedded directly in firmware — validated by consistent per-class recall (0.79–0.90 range) with no single class dominating the confusion matrix.</li>
+          </ul>
+        </div>
+
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Project details</span>
+          <ul class="meta-list">
+            <li><strong>Course:</strong> Embedded Systems – Arizona State University</li>
+            <li><strong>Hardware:</strong> Arduino Nano 33 BLE Sense Rev2</li>
+            <li><strong>MCU core:</strong> ARM Cortex-M4F @ 64 MHz, 256 KB RAM</li>
+            <li><strong>Audio:</strong> PDM microphone @ 16 kHz, gain = 75</li>
+            <li><strong>Keywords:</strong> never, none, all, must, only</li>
+            <li><strong>Dataset size:</strong> 5,775 samples (3 merged sources)</li>
+            <li><strong>Train / Val / Test:</strong> 4,620 / 577 / 578</li>
+            <li><strong>Balanced train:</strong> 4,965 (993 per class)</li>
+            <li><strong>Feature shape:</strong> 101 frames × 13 log-energy features</li>
+            <li><strong>Model:</strong> MLP — 88,581 parameters</li>
+            <li><strong>Validation accuracy:</strong> 83%</li>
+            <li><strong>Real-time accuracy:</strong> 78–83%</li>
+            <li><strong>Inference latency:</strong> &lt; 100 ms</li>
+            <li><strong>Norm stats (µ / σ):</strong> 0.04996 / 0.05633</li>
+            <li><strong>Deployment:</strong> Custom C-weight header (no TFLite interpreter)</li>
+          </ul>
+        </div>
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Skills</span>
+          <div class="skill-tags">
+            <span class="skill-tag">TinyML</span>
+            <span class="skill-tag">Embedded C / Arduino</span>
+            <span class="skill-tag">ARM Cortex-M4</span>
+            <span class="skill-tag">Audio DSP</span>
+            <span class="skill-tag">Log-Energy Feature Extraction</span>
+            <span class="skill-tag">IIR Filtering (HP / LP)</span>
+            <span class="skill-tag">RMS Normalization</span>
+            <span class="skill-tag">Voice Activity Detection (VAD)</span>
+            <span class="skill-tag">SNR Estimation</span>
+            <span class="skill-tag">MLP (Feedforward NN)</span>
+            <span class="skill-tag">TensorFlow / Keras</span>
+            <span class="skill-tag">C-Weight Header Export</span>
+            <span class="skill-tag">Random Oversampling</span>
+            <span class="skill-tag">Z-Score Normalization</span>
+            <span class="skill-tag">EMA Probability Smoothing</span>
+            <span class="skill-tag">PDM Microphone</span>
+            <span class="skill-tag">Python (librosa, soundfile, scikit-learn)</span>
+          </div>
+        </div>
+        <div class="cta-card" data-reveal>
+          <span class="detail-kicker">Next project</span>
+          <h3>Motor Control Firmware Simulator</h3>
+          <p>From audio inference to closed-loop PID motor control — HAL-portable C across a 4-task RTOS scheduler with a 5-protocol embedded stack.</p>
+          <a class="button-inline" href="/projects/motor-firmware-sim/">View next project &rarr;</a>
+        </div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

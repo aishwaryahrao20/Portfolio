@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Motor Control Firmware Simulator – closed-loop PID firmware in C with HAL architecture, 4-task RTOS scheduler, and multi-protocol stack targeting ARM Cortex-M4.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>Motor Control Firmware Simulator | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> Firmware · RTOS · Embedded C · ARM Cortex-M4</span>
+        <h1 class="detail-title">Motor Control Firmware Simulator <span class="accent-text">with HAL-Portable Architecture</span></h1>
+        <p class="hero-text">Closed-loop PID motor control firmware written in C, architected with a Hardware Abstraction Layer that enables identical application logic to run on macOS/Linux simulation and bare-metal STM32 without any changes above the HAL boundary.</p>
+      </div></section>
+
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+
+        <div class="detail-section" data-reveal>
+          <h2>Overview</h2>
+          <p>This project implements a portable, closed-loop motor control firmware stack in C. The architecture is structured around a strict Hardware Abstraction Layer (HAL), enabling the application layer — PID controller, motor model, RTOS scheduler, and protocol handlers — to run identically on both a macOS/Linux simulation environment and bare-metal STM32 (ARM Cortex-M4) hardware. The simulation backend uses POSIX threads and printf, while the hardware backend maps directly to STM32 HAL calls with zero application-layer changes.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Architecture</h2>
+          <p>The firmware is layered across three tiers: the Application Layer, the HAL Interface, and the platform-specific backends. The HAL interface exposes five protocol entry points — <code>hal_uart_send</code>, <code>hal_i2c_read</code>, <code>hal_spi_write</code>, <code>hal_pwm_set_duty</code>, and <code>hal_encoder_get_ticks</code> — allowing the application layer to remain entirely hardware-agnostic.</p>
+          <p>Porting to STM32F446RE requires replacing only <code>hal_sim.c</code> with <code>hal_stm32.c</code> and swapping POSIX thread tasks for FreeRTOS task definitions. Every PID, motor model, and protocol module remains unchanged.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>RTOS Task Structure</h2>
+          <p>The firmware runs four cooperative real-time tasks, each with a fixed period and a dedicated responsibility. Shared state between tasks is protected by a POSIX mutex, mirroring the FreeRTOS <code>xSemaphoreTake</code> pattern for direct hardware porting.</p>
+          <ul>
+            <li><strong>Encoder task (1 ms):</strong> Reads motor speed via HAL and updates the first-order motor model at 1 kHz.</li>
+            <li><strong>PID task (5 ms):</strong> Computes closed-loop PID output every 5 ms and drives the PWM duty cycle via <code>hal_pwm_set_duty</code>.</li>
+            <li><strong>CAN task (10 ms):</strong> Parses simulated CAN frames to update the speed setpoint at 100 Hz.</li>
+            <li><strong>Telemetry task (50 ms):</strong> Streams UART telemetry logs and polls the I2C thermal sensor (TMP102 @ 0x48) and SPI motor driver (DRV8323) at 20 Hz.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Multi-Protocol Firmware Stack</h2>
+          <p>The firmware integrates five hardware protocols across the system, each with a defined role and a clean simulation pathway.</p>
+          <ul>
+            <li><strong>UART:</strong> Real-time telemetry stream — simulated via printf to terminal, maps to <code>HAL_UART_Transmit()</code> on STM32.</li>
+            <li><strong>SPI:</strong> Motor driver configuration (DRV8323) — logged as a transaction in simulation, maps to <code>HAL_SPI_TransmitReceive()</code>.</li>
+            <li><strong>I2C:</strong> Thermal monitoring (TMP102 @ 0x48) — driven by the software motor thermal model, maps to <code>HAL_I2C_Mem_Read()</code>.</li>
+            <li><strong>CAN:</strong> Speed setpoint delivery — parsed from simulated CAN frames with a binary protocol parser.</li>
+            <li><strong>PWM:</strong> Motor drive signal — duty cycle fed directly into the motor model, maps to <code>__HAL_TIM_SET_COMPARE()</code>.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>PID Controller Design</h2>
+          <p>The closed-loop controller is implemented with anti-windup clamping to prevent integrator saturation during transients. Tuned parameters: Kp = 0.8, Ki = 0.3, Kd = 0.02. Output range is 0–100% PWM duty cycle with the integral term clamped to the same bounds to bound output during large error excursions.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Measured outcomes</h2>
+          <ul>
+            <li>Achieved 1.6% steady-state RPM error (1,476 RPM vs. 1,500 RPM setpoint) by tuning closed-loop PID (Kp=0.8, Ki=0.3, Kd=0.02) with integral anti-windup clamping, as validated through Python step-response log analysis.</li>
+            <li>Achieved sub-500 ms rise time (0→90% setpoint) by scheduling the PID task at a fixed 5 ms period under a mutex-protected 4-task RTOS scheduler, confirmed via UART telemetry capture.</li>
+            <li>Maintained thermal steady-state of ~41°C at 50% load by integrating a first-order motor thermal model polled via I2C at 20 Hz, with real-time temperature streaming over UART.</li>
+            <li>Achieved zero application-layer code changes between simulation and hardware targets by enforcing a strict 5-function HAL boundary (UART, SPI, I2C, PWM, encoder), validated by mapping each HAL call 1:1 to its STM32 HAL equivalent.</li>
+            <li>Demonstrated a complete 5-protocol embedded stack (UART, SPI, I2C, CAN, PWM) running concurrently across 4 RTOS tasks with shared-state integrity maintained by POSIX mutex across 1 ms, 5 ms, 10 ms, and 50 ms task periods.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Hardware porting path (STM32F446RE)</h2>
+          <p>The firmware is designed for direct deployment on NUCLEO-F446RE + DC gearmotor + L298N + TMP102 + SN65HVD230. Porting requires replacing the simulation backend with STM32 HAL calls for each of the five HAL functions and substituting POSIX thread tasks with FreeRTOS task definitions — all application, PID, and protocol logic is unchanged above the HAL boundary.</p>
+        </div>
+
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Project details</span>
+          <ul class="meta-list">
+            <li><strong>Year:</strong> 2025</li>
+            <li><strong>Type:</strong> Personal Firmware Project</li>
+            <li><strong>Target hardware:</strong> STM32F446RE (NUCLEO-F446RE)</li>
+            <li><strong>MCU core:</strong> ARM Cortex-M4</li>
+            <li><strong>Setpoint:</strong> 1,500 RPM</li>
+            <li><strong>Steady-state error:</strong> 1.6% (1,476 RPM)</li>
+            <li><strong>Rise time:</strong> &lt; 500 ms (0 → 90%)</li>
+            <li><strong>Thermal steady-state:</strong> ~41°C at 50% load</li>
+            <li><strong>RTOS tasks:</strong> 4 (1 ms, 5 ms, 10 ms, 50 ms)</li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/aishwaryahrao20/Motor-firmware-sim" target="_blank" rel="noreferrer">aishwaryahrao20/Motor-firmware-sim</a></li>
+          </ul>
+        </div>
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Skills</span>
+          <div class="skill-tags">
+            <span class="skill-tag">Bare-Metal C</span>
+            <span class="skill-tag">HAL Design</span>
+            <span class="skill-tag">RTOS Scheduling</span>
+            <span class="skill-tag">Closed-Loop PID Control</span>
+            <span class="skill-tag">Anti-Windup</span>
+            <span class="skill-tag">ARM Cortex-M4</span>
+            <span class="skill-tag">STM32F446RE</span>
+            <span class="skill-tag">UART</span>
+            <span class="skill-tag">SPI</span>
+            <span class="skill-tag">I2C</span>
+            <span class="skill-tag">CAN</span>
+            <span class="skill-tag">PWM</span>
+            <span class="skill-tag">POSIX Threads</span>
+            <span class="skill-tag">Mutex / Semaphore</span>
+            <span class="skill-tag">Motor Thermal Modeling</span>
+            <span class="skill-tag">Python Telemetry Analysis</span>
+            <span class="skill-tag">GCC / Make</span>
+          </div>
+        </div>
+        <div class="cta-card" data-reveal>
+          <span class="detail-kicker">Next project</span>
+          <h3>STM32 Bootloader &amp; Firmware Update System</h3>
+          <p>From closed-loop motor control to bare-metal boot state machines, CRC32 image verification, and chunked UART firmware update protocols.</p>
+          <a class="button-inline" href="/projects/stm32-bootloader/">View next project &rarr;</a>
+        </div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

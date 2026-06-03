@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Driver Distraction & Drowsiness Detection System – real-time computer vision pipeline achieving 86% detection accuracy across 1,600 observations at 30 FPS using EAR, PERCLOS, gaze ratio, and 3-axis head pose estimation with closed-loop buzzer and SMS alerting.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>Driver Distraction &amp; Drowsiness Detection System | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> Computer Vision · Real-Time Signal Processing · Closed-Loop Control</span>
+        <h1 class="detail-title">Driver Distraction &amp; Drowsiness <span class="accent-text">Detection System</span></h1>
+        <p class="hero-text">A real-time in-vehicle monitoring pipeline that extracts Eye Aspect Ratio, PERCLOS, gaze deviation, and 3-axis head pose from 30 FPS dashcam video — fusing these signals into a closed-loop alert system that triggers in under 3 seconds, validated across 1,600 observations at 86% detection accuracy with no cloud dependency.</p>
+      </div></section>
+
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+
+        <div class="detail-section" data-reveal>
+          <h2>Overview</h2>
+          <p>This project built a real-time driver safety monitoring system that continuously analyzes dashcam video to detect drowsiness and distraction, then triggers a closed-loop alert response before the driver's impairment becomes a hazard. The full detection and alerting pipeline runs locally — no cloud inference, no external API — using OpenCV for video processing and dlib's 68-point facial landmark predictor to drive four complementary detection signals: Eye Aspect Ratio (EAR), PERCLOS, gaze ratio, and 3-axis head pose estimation (yaw, pitch, roll).</p>
+          <p>The system fuses these signals with calibrated thresholds to distinguish genuine drowsiness from transient blinks, gaze from distraction, and normal head movement from disengagement — then actuates a buzzer and dispatches an automated SMS notification when a combined alert condition is met.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Detection signal pipeline</h2>
+          <p>All four detection signals are derived in real time from dlib's 68-point facial landmark mesh applied to each 30 FPS frame. Each signal targets a different physiological indicator of driver impairment.</p>
+          <ul>
+            <li><strong>Eye Aspect Ratio (EAR):</strong> Computed from the six eye landmark coordinates per eye as the ratio of vertical eye opening to horizontal width. EAR drops sharply during a blink and sustains at a low value during drowsiness-induced eye closure. A threshold of EAR &lt; 0.20 held for ≥ 2.5 seconds is used as the drowsiness trigger, separating involuntary micro-sleeps from normal blink transients.</li>
+            <li><strong>PERCLOS (Percentage of Eye Closure):</strong> Tracks the fraction of time per rolling window that the eye is closed beyond the EAR threshold — a clinically established drowsiness metric. High PERCLOS values over a sustained window signal progressive fatigue rather than isolated blink events.</li>
+            <li><strong>Gaze ratio (pupil-to-corner displacement):</strong> The horizontal position of the pupil centroid relative to the eye corners is computed per frame to estimate gaze direction. Sustained gaze deviation off the forward-looking axis signals driver distraction independent of eyelid state, catching phone use and mirror-checking behavior that EAR alone cannot detect.</li>
+            <li><strong>3-axis head pose estimation (yaw, pitch, roll):</strong> A set of 3D facial landmark reference points is matched against the 2D detected positions using solvePnP to recover the camera-relative rotation matrix, decomposed into yaw (left/right head turn), pitch (up/down nod), and roll (lateral tilt). Sustained off-axis yaw or pitch flags head-drop and distraction postures that gaze ratio cannot capture when eyes remain forward.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Signal fusion and closed-loop alerting</h2>
+          <p>The four signals are fused under a threshold-based decision logic that requires corroborating evidence before triggering an alert, reducing false positives from individual signal noise. The closed-loop alert sequence is designed to escalate proportionally:</p>
+          <ul>
+            <li><strong>Primary trigger — drowsiness:</strong> EAR &lt; 0.20 sustained for ≥ 2.5 seconds, confirmed by elevated PERCLOS in the same rolling window, activates the buzzer alert immediately.</li>
+            <li><strong>Secondary trigger — distraction:</strong> Sustained gaze ratio deviation (pupil displaced toward eye corner) combined with off-axis yaw or pitch from head pose estimation triggers a separate distraction alert path.</li>
+            <li><strong>Buzzer actuation:</strong> Hardware buzzer actuates on either trigger path, providing an immediate physical alert to the driver.</li>
+            <li><strong>Automated SMS notification:</strong> An SMS is dispatched automatically via the alert pipeline, notifying a secondary contact — enabling remote awareness for fleet or passenger safety applications.</li>
+          </ul>
+          <p>The entire pipeline — from frame capture to buzzer actuation — completes within a 3-second latency window, measured from drowsiness onset (first frame below EAR threshold) to alert output.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Why four signals?</h2>
+          <p>Driver impairment takes multiple forms that no single signal fully captures. EAR alone misses open-eyed microsleep and distraction. Head pose alone does not distinguish a deliberate head turn from a drowsy nod. Gaze ratio alone cannot detect closed eyes. PERCLOS adds temporal depth to instantaneous EAR, distinguishing a blink from sustained closure. Using all four signals in a fused decision layer provides robust coverage across drowsiness, distraction, and combined impairment states — the three dominant categories of driver inattention in real-world conditions.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Measured outcomes</h2>
+          <ul>
+            <li>Achieved 86% detection accuracy across 1,600 observations by building a real-time computer vision pipeline that extracted Eye Aspect Ratio (EAR), PERCLOS, gaze ratio (pupil-to-corner displacement), and 3-axis head pose (yaw, pitch, roll) from 30 FPS dashcam video using dlib's 68-point facial landmark detector — validated against labelled ground-truth events across multiple driving sessions.</li>
+            <li>Reduced driver alert response time to under 3 seconds by building a closed-loop control system that fused drowsiness signals (EAR &lt; 0.20 for ≥ 2.5 s) with gaze deviation tracking, triggering buzzer actuation and automated SMS dispatch with no cloud dependency — measured from drowsiness onset frame to physical alert output.</li>
+            <li>Separated drowsiness from transient blinks by combining per-frame EAR thresholding (EAR &lt; 0.20) with rolling-window PERCLOS accumulation, reducing false positive alert rate caused by normal blink events — validated by comparing alert rate against known ground-truth blink vs. drowsiness segments in the test dataset.</li>
+            <li>Detected driver distraction independent of eyelid state by fusing gaze ratio (pupil-to-corner displacement) with 3-axis head pose estimation (solvePnP rotation decomposition), capturing off-axis gaze and head-drop postures that EAR-only systems cannot identify — demonstrated across phone-use and mirror-checking distraction scenarios in the test set.</li>
+          </ul>
+        </div>
+
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Project details</span>
+          <ul class="meta-list">
+            <li><strong>Duration:</strong> Jan – Aug 2024</li>
+            <li><strong>Associated with:</strong> RV Institute of Technology and Management</li>
+            <li><strong>Input:</strong> 30 FPS dashcam video</li>
+            <li><strong>Landmark model:</strong> dlib 68-point facial predictor</li>
+            <li><strong>Detection accuracy:</strong> 86% across 1,600 observations</li>
+            <li><strong>Alert latency:</strong> &lt; 3 seconds from onset</li>
+            <li><strong>EAR drowsiness threshold:</strong> &lt; 0.20 for ≥ 2.5 s</li>
+            <li><strong>Signals used:</strong> EAR · PERCLOS · Gaze ratio · Head pose (yaw, pitch, roll)</li>
+            <li><strong>Alert outputs:</strong> Buzzer actuation · Automated SMS</li>
+            <li><strong>Cloud dependency:</strong> None</li>
+          </ul>
+        </div>
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Skills</span>
+          <div class="skill-tags">
+            <span class="skill-tag">OpenCV</span>
+            <span class="skill-tag">dlib</span>
+            <span class="skill-tag">68-Point Facial Landmark Detection</span>
+            <span class="skill-tag">Eye Aspect Ratio (EAR)</span>
+            <span class="skill-tag">PERCLOS</span>
+            <span class="skill-tag">Gaze Ratio Estimation</span>
+            <span class="skill-tag">Head Pose Estimation (solvePnP)</span>
+            <span class="skill-tag">Real-Time Video Processing (30 FPS)</span>
+            <span class="skill-tag">Signal Fusion</span>
+            <span class="skill-tag">Closed-Loop Control</span>
+            <span class="skill-tag">Anomaly Detection</span>
+            <span class="skill-tag">Python</span>
+          </div>
+        </div>
+        <div class="cta-card" data-reveal>
+          <span class="detail-kicker">Next project</span>
+          <h3>Heterogeneous Integration in Power and Optoelectronics</h3>
+          <p>From real-time computer vision to research-level semiconductor packaging — SiC/GaN, co-packaged optics, and MEMS integration.</p>
+          <a class="button-inline" href="/projects/heterogeneous-integration-review/">View next project &rarr;</a>
+        </div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

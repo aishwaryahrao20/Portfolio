@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="STM32 Bootloader & Firmware Update System – bare-metal C bootloader with CRC32 image verification, sector-level flash programming, and a chunked UART firmware update protocol targeting ARM Cortex-M4.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>STM32 Bootloader &amp; Firmware Update System | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> Bare-Metal Firmware · Boot Sequence · Flash Programming · CRC32</span>
+        <h1 class="detail-title">STM32 Bootloader &amp; <span class="accent-text">Firmware Update System</span></h1>
+        <p class="hero-text">A fault-tolerant bare-metal bootloader implemented in C targeting ARM Cortex-M4, featuring a 6-state boot state machine, CRC32 image verification, sector-level flash programming, and a chunked UART firmware update protocol — designed from scratch without OS or HAL abstractions.</p>
+      </div></section>
+
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+
+        <div class="detail-section" data-reveal>
+          <h2>Overview</h2>
+          <p>This project implements a production-pattern STM32 bootloader from scratch in bare-metal C with no OS, no vendor HAL abstractions, and no external libraries — only the processor, flash, UART, and a precisely defined flash memory map. The bootloader manages the entire boot sequence: detecting a firmware update trigger, receiving a chunked binary over UART, verifying per-packet CRC16 integrity and full-image CRC32 correctness, programming the verified image into flash, and branching to the application's reset handler via a direct stack-pointer and program-counter jump.</p>
+          <p>The simulation backend uses a 512 KB file-backed flash model and file-descriptor UART, enabling full-cycle testing on macOS/Linux before hardware deployment on a NUCLEO-F446RE.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Boot State Machine</h2>
+          <p>The bootloader implements a six-state deterministic state machine with a fault-safe fallback on image corruption.</p>
+          <ul>
+            <li><strong>INIT:</strong> Prints flash memory layout and initializes all peripherals.</li>
+            <li><strong>CHECK_TRIGGER:</strong> Reads a GPIO pin or update-trigger file — routes to UPDATE_MODE or VERIFY_APP.</li>
+            <li><strong>UPDATE_MODE:</strong> Receives firmware binary over UART in 128-byte chunks, ACKs each packet on CRC16 pass, NACKs and retransmits on failure, then flashes the staging area.</li>
+            <li><strong>VERIFY_APP:</strong> Computes a full CRC32 over the staged application image and cross-checks against stored metadata (magic, version, size, CRC32).</li>
+            <li><strong>JUMP_TO_APP:</strong> Loads the application's initial stack pointer from flash offset 0, relocates the vector table, and branches to the reset handler via inline assembly.</li>
+            <li><strong>ERROR:</strong> CRC32 mismatch — stays in bootloader indefinitely and awaits a new firmware image, preventing corrupt firmware from executing.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Flash Memory Layout</h2>
+          <p>The 512 KB flash space is partitioned into four fixed regions to enable independent bootloader write-protection, metadata management, dual-bank staging, and safe fallback.</p>
+          <ul>
+            <li><strong>0x08000000 – Bootloader (32 KB):</strong> Write-protected; contains the boot state machine, CRC logic, and UART receiver.</li>
+            <li><strong>0x08008000 – App Metadata (4 KB):</strong> Stores magic number, firmware version, image size, and expected CRC32 — verified on every boot.</li>
+            <li><strong>0x08009000 – Application (128 KB):</strong> Active motor control firmware partition, branched to after successful verification.</li>
+            <li><strong>0x08029000 – Staging Area (128 KB):</strong> Receives incoming firmware during an update cycle; copied to the application partition only after full CRC32 verification.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>UART Firmware Update Protocol</h2>
+          <p>The binary update protocol transmits firmware as 128-byte data chunks wrapped in an 8-byte header carrying sequence number, length, and per-packet CRC16. The bootloader ACKs each correctly received packet and NACKs any packet with a CRC16 mismatch, triggering host-side retransmission. After all packets are received, the bootloader copies the staged image to the application partition, writes verified metadata, and runs a final CRC32 check before the next boot.</p>
+          <p>The host-side Python tooling (<code>host_updater.py</code>) packages a binary into correctly framed packets with pre-computed CRC16 per chunk and sends them over the simulated UART.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>CRC32 Implementation</h2>
+          <p>CRC32 is implemented from scratch using polynomial <code>0xEDB88320</code> — the same polynomial used by the STM32 hardware CRC unit and the Ethernet standard — ensuring that the software implementation produces identical results to the hardware accelerator when deployed on-chip. CRC16 is applied per-packet for link-layer integrity; CRC32 is applied over the entire application image for boot-time verification.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Measured outcomes</h2>
+          <ul>
+            <li>Achieved 100% corrupt-image detection before boot by implementing full-image CRC32 verification (polynomial 0xEDB88320) in the VERIFY_APP state, cross-checked against metadata stored in a dedicated 4 KB flash sector — validated across blank-flash, valid-firmware, and deliberately corrupted image test cases.</li>
+            <li>Successfully received and flashed a 512-byte firmware image (4 packets × 128 bytes) with all packets ACK'd and a final verified CRC32 of 0x4FACB929, as measured by end-to-end simulation using <code>host_updater.py</code> and the file-backed flash model.</li>
+            <li>Demonstrated safe boot recovery by designing the ERROR state to hold the bootloader indefinitely on any CRC mismatch, preventing execution of a corrupt application image — tested by deliberately injecting a single-byte corruption into the staged binary.</li>
+            <li>Implemented a direct bare-metal application jump in C via inline assembly — setting the MSP from flash offset 0x00 and branching to the reset handler at offset 0x04 — without OS or HAL involvement, validated by a successful jump to 0x08009000 after normal-boot verification.</li>
+            <li>Enabled full cross-platform firmware update cycle testing on macOS/Linux by replacing UART and flash hardware with a file-descriptor UART and a 512 KB file-backed flash model, achieving functional parity with the STM32 hardware path for all four test scenarios.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Hardware porting path (STM32F446RE)</h2>
+          <p>Porting to the NUCLEO-F446RE requires replacing four simulation primitives with their STM32 HAL equivalents: <code>flash_sim_write()</code> → <code>HAL_FLASH_Program()</code>, <code>flash_sim_erase()</code> → <code>HAL_FLASHEx_Erase()</code>, file-based UART → <code>HAL_UART_Receive_IT()</code>, and trigger file check → <code>HAL_GPIO_ReadPin()</code>. The boot state machine, CRC32, protocol parser, and jump logic are entirely unchanged.</p>
+        </div>
+
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Project details</span>
+          <ul class="meta-list">
+            <li><strong>Year:</strong> 2025</li>
+            <li><strong>Type:</strong> Personal Firmware Project</li>
+            <li><strong>Target hardware:</strong> STM32F446RE (NUCLEO-F446RE)</li>
+            <li><strong>MCU core:</strong> ARM Cortex-M4</li>
+            <li><strong>Flash size:</strong> 512 KB (4-region layout)</li>
+            <li><strong>Bootloader region:</strong> 32 KB, write-protected</li>
+            <li><strong>CRC32 polynomial:</strong> 0xEDB88320</li>
+            <li><strong>Packet size:</strong> 128 bytes + 8-byte header</li>
+            <li><strong>Test: 4-packet update:</strong> CRC32 = 0x4FACB929 ✓</li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/aishwaryahrao20/stm32-bootloader" target="_blank" rel="noreferrer">aishwaryahrao20/stm32-bootloader</a></li>
+          </ul>
+        </div>
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Skills</span>
+          <div class="skill-tags">
+            <span class="skill-tag">Bare-Metal C</span>
+            <span class="skill-tag">Boot State Machine</span>
+            <span class="skill-tag">ARM Cortex-M4 Boot Sequence</span>
+            <span class="skill-tag">Flash Memory Management</span>
+            <span class="skill-tag">Sector Erase / Program</span>
+            <span class="skill-tag">CRC32 from Scratch</span>
+            <span class="skill-tag">CRC16 Packet Integrity</span>
+            <span class="skill-tag">Binary Protocol Design</span>
+            <span class="skill-tag">UART Firmware Update</span>
+            <span class="skill-tag">Fault-Tolerant Design</span>
+            <span class="skill-tag">Vector Table Relocation</span>
+            <span class="skill-tag">Inline Assembly (MSP / PC)</span>
+            <span class="skill-tag">Python Host Tooling</span>
+            <span class="skill-tag">STM32F446RE</span>
+            <span class="skill-tag">GCC / Make</span>
+          </div>
+        </div>
+        <div class="cta-card" data-reveal>
+          <span class="detail-kicker">Next project</span>
+          <h3>IMU-Based Posture Detection System</h3>
+          <p>From bare-metal boot sequences to on-device TinyML inference — 9-axis IMU classification at 99.99% accuracy on ARM Cortex-M4.</p>
+          <a class="button-inline" href="/projects/imu-based-posture-detection-system/">View next project &rarr;</a>
+        </div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
