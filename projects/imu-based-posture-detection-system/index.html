@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IMU-Based Posture Detection System – two-phase TinyML project achieving 99.99% accuracy on Arduino Nano 33 BLE Sense Rev2 with 1D-CNN deployed via TFLite Micro on ARM Cortex-M4.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>IMU-Based Posture Detection System | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> TinyML · Edge AI · Embedded Systems · ARM Cortex-M4</span>
+        <h1 class="detail-title">IMU-Based Posture Detection System <span class="accent-text">with On-Device TinyML</span></h1>
+        <p class="hero-text">An end-to-end two-phase embedded posture classification system on an Arduino Nano 33 BLE Sense Rev2 — from offline neural network training and activation function benchmarking (Phase 1), to sensor-agnostic 1D-CNN deployment via TFLite Micro on ARM Cortex-M4 with sub-150 ms on-device inference and no cloud dependency (Phase 2).</p>
+      </div></section>
+
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+
+        <div class="detail-section" data-reveal>
+          <h2>Overview</h2>
+          <p>This project built a complete posture classification system across two distinct engineering phases. Phase 1 established an offline classification pipeline: the Arduino Nano 33 BLE Sense Rev2 logs 9-axis IMU data at 50 Hz over serial, and a Python training pipeline benchmarks three activation functions — Sigmoid, Tanh, and ReLU — across a two-hidden-layer feedforward neural network, selecting the best-performing variant. Phase 2 deploys posture classification directly on the microcontroller using three independently trained 1D-CNN models — one per sensor modality (accelerometer, gyroscope, magnetometer) — converted to TFLite and embedded as C byte arrays, enabling runtime sensor selection with no host inference dependency.</p>
+          <p>The target hardware is the Arduino Nano 33 BLE Sense Rev2: ARM Cortex-M4F running at 64 MHz, 256 KB RAM, BMI270 (accelerometer + gyroscope), and BMM150 (magnetometer). Five posture classes are classified: Supine, Prone, Side, Sitting/Standing, and Unknown.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Phase 1 — Offline Neural Network Classification</h2>
+          <p>The Arduino firmware reads raw accelerometer data at approximately 50 Hz and computes four derived features per sample: pitch, roll, <code>dotS</code> (Z-axis gravitational alignment), and <code>dotL</code> (X-axis alignment). A rule-based label (1–5) is assigned on-board for ground-truth annotation and logged over serial to per-posture CSV files across multiple collection trials.</p>
+          <p>The Python training pipeline (<code>posture_nn.py</code>) loads all CSVs, applies z-score normalization and Gaussian noise augmentation at σ = 0.02 to improve generalization, and trains a two-hidden-layer dense network (128 → 64 neurons) independently across three activation function configurations. Each variant is evaluated with accuracy and loss convergence curves, confusion matrices, and per-class precision/recall metrics.</p>
+          <ul>
+            <li><strong>Sigmoid:</strong> 99.97% validation accuracy, 99.97% test accuracy.</li>
+            <li><strong>Tanh:</strong> 99.98% validation accuracy, 99.98% test accuracy.</li>
+            <li><strong>ReLU:</strong> 99.99% validation accuracy, 99.99% test accuracy — fastest convergence, selected as the best model.</li>
+          </ul>
+          <p>All five classes achieved near-perfect precision and recall across every activation variant. ReLU was selected for Phase 2 due to fastest training convergence and highest test accuracy.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Phase 2 — On-Device TinyML Inference (Sensor-Agnostic)</h2>
+          <p>Phase 2 moves inference entirely onto the microcontroller. A separate 9-axis IMU logger streams raw <code>ax, ay, az, gx, gy, gz, mx, my, mz</code> at 50 Hz over serial. A Python dataset builder (<code>build_dataset.py</code>) creates sliding-window datasets per sensor modality — windows of 100 samples × 3 channels with 50% overlap — producing separate <code>.npz</code> archives for accelerometer, gyroscope, and magnetometer data.</p>
+          <p>Three independent 1D-CNN models are trained, one per sensor modality, using the following architecture:</p>
+          <ul>
+            <li>Input: (100, 3)</li>
+            <li>Conv1D — 16 filters, kernel size 5, ReLU</li>
+            <li>Conv1D — 32 filters, kernel size 5, ReLU</li>
+            <li>GlobalAveragePooling1D</li>
+            <li>Dense(32, ReLU)</li>
+            <li>Dense(5, Softmax) — one output per posture class</li>
+          </ul>
+          <p>Each trained model is converted to TFLite via <code>convert_to_tflite.py</code> and exported as a C byte array header for embedding in firmware. The inference sketch (<code>posture_inference.ino</code>) collects a 100-sample window, applies training-set normalization statistics, runs inference within a 32 KB tensor arena, and returns the predicted label and confidence over serial. A Python base station (<code>base_station.py</code>) provides a CLI for runtime sensor selection and live prediction display.</p>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>Measured outcomes</h2>
+          <ul>
+            <li>Achieved 99.99% classification accuracy across 5 posture classes by training a two-hidden-layer dense network (128→64 neurons) with z-score normalization and Gaussian augmentation (σ=0.02) on rule-labelled IMU data, benchmarked across Sigmoid, Tanh, and ReLU activation variants with ReLU demonstrating fastest convergence and highest test accuracy.</li>
+            <li>Deployed 3 sensor-specific 1D-CNN models (~6 K parameters, 19–65 KB TFLite) to an ARM Cortex-M4 via TFLite Micro, delivering sub-150 ms on-device inference with no cloud dependency, within a 32 KB tensor arena — enabled by an automated Keras → TFLite → C-header conversion pipeline.</li>
+            <li>Enabled runtime sensor modality selection (accelerometer, gyroscope, magnetometer) with no firmware recompile, by training and embedding three independently quantized models selectable via the base station CLI, as validated by live prediction matching offline test accuracy in controlled conditions.</li>
+            <li>Reduced dataset sensitivity to sensor noise by applying 50% overlapping sliding windows (100 samples per window) combined with Gaussian augmentation, validated by near-identical per-class precision and recall across all five posture labels and all three activation functions in held-out test evaluation.</li>
+          </ul>
+        </div>
+
+        <div class="detail-section" data-reveal>
+          <h2>System architecture</h2>
+          <p>The two-phase system separates data collection, training, and on-device deployment into well-defined stages. In Phase 1, the Arduino logs derived IMU features over USB serial to CSV; the Python pipeline trains and evaluates multiple model variants offline. In Phase 2, the Arduino logs raw 9-axis IMU frames; the Python pipeline builds sliding-window datasets, trains per-modality CNNs, converts to TFLite, and generates C headers; the firmware embeds all three models and runs inference in real time, streaming predictions to the base station.</p>
+        </div>
+
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Project details</span>
+          <ul class="meta-list">
+            <li><strong>Duration:</strong> Aug – Dec 2025</li>
+            <li><strong>Course:</strong> Embedded Systems – Arizona State University</li>
+            <li><strong>Hardware:</strong> Arduino Nano 33 BLE Sense Rev2</li>
+            <li><strong>MCU core:</strong> ARM Cortex-M4F @ 64 MHz, 256 KB RAM</li>
+            <li><strong>IMU sensors:</strong> BMI270 (accel/gyro) + BMM150 (mag)</li>
+            <li><strong>Posture classes:</strong> 5 (Supine, Prone, Side, Sitting/Standing, Unknown)</li>
+            <li><strong>Phase 1 best accuracy:</strong> 99.99% (ReLU)</li>
+            <li><strong>Phase 2 model size:</strong> ~6 K parameters, 19–65 KB</li>
+            <li><strong>Inference latency:</strong> &lt; 150 ms per window</li>
+            <li><strong>Tensor arena:</strong> 32 KB</li>
+            <li><strong>Sampling rate:</strong> 50 Hz</li>
+            <li><strong>Window size:</strong> 100 samples, 50% overlap</li>
+          </ul>
+        </div>
+        <div class="detail-card" data-reveal>
+          <span class="detail-kicker">Skills</span>
+          <div class="skill-tags">
+            <span class="skill-tag">TinyML</span>
+            <span class="skill-tag">TFLite Micro</span>
+            <span class="skill-tag">ARM Cortex-M4</span>
+            <span class="skill-tag">Arduino (Embedded C++)</span>
+            <span class="skill-tag">TensorFlow / Keras</span>
+            <span class="skill-tag">1D-CNN</span>
+            <span class="skill-tag">Feedforward Neural Network</span>
+            <span class="skill-tag">Model Quantization</span>
+            <span class="skill-tag">Keras-to-C Header Pipeline</span>
+            <span class="skill-tag">9-axis IMU</span>
+            <span class="skill-tag">Sliding Window Feature Extraction</span>
+            <span class="skill-tag">Z-Score Normalization</span>
+            <span class="skill-tag">Gaussian Augmentation</span>
+            <span class="skill-tag">Sensor Fusion</span>
+            <span class="skill-tag">Python (pyserial, NumPy, pandas, matplotlib)</span>
+            <span class="skill-tag">scikit-learn</span>
+          </div>
+        </div>
+        <div class="cta-card" data-reveal>
+          <span class="detail-kicker">Next project</span>
+          <h3>Integrate-and-Fire Neuron VLSI Design</h3>
+          <p>From on-device neural network inference to full-custom transistor-level layout — 391 µm² in 32 nm CMOS with DRC/LVS sign-off and 5.79 ps propagation delay.</p>
+          <a class="button-inline" href="/projects/integrate-and-fire-neuron-design/">View next project &rarr;</a>
+        </div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
