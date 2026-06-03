@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio website for Aishwarya Hareesh Rao - embedded systems, firmware, TinyML, edge AI, real-time signal processing, and VLSI design.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    })();
+  </script>
+  <title>Integrate-and-Fire Neuron VLSI Design | Aishwarya Hareesh Rao</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a class="brand" href="/" aria-label="Aishwarya Hareesh Rao home">
+          <span class="brand-highlight">Aishwarya</span> Hareesh Rao
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" data-menu-toggle>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>
+            </svg>
+          </button>
+          <nav class="nav-links" aria-label="Primary navigation" data-mobile-nav>
+            <a class="nav-link" href="/" data-nav-link>Home</a>
+            <a class="nav-link" href="/projects/" data-nav-link>Projects</a>
+            <a class="nav-link" href="/experience/" data-nav-link>Experience</a>
+            <a class="nav-link" href="/#about" data-nav-link>About</a>
+            <a class="nav-link" href="/#contact" data-nav-link>Contact</a>
+          </nav>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v2.5"></path><path d="M12 18.5V21"></path>
+              <path d="M4.93 4.93l1.77 1.77"></path><path d="M17.3 17.3l1.77 1.77"></path>
+              <path d="M3 12h2.5"></path><path d="M18.5 12H21"></path>
+              <path d="M4.93 19.07l1.77-1.77"></path><path d="M17.3 6.7l1.77-1.77"></path>
+              <circle cx="12" cy="12" r="4.5"></circle>
+            </svg>
+          </button>
+          <a class="button" href="/#contact">Let's talk</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="detail-hero"><div class="container" data-reveal>
+        <a class="back-link" href="/projects/">&larr; Back to projects</a>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> VLSI - EDA - Post-Layout Timing</span>
+        <h1 class="detail-title">Integrate-and-Fire Neuron <span class="accent-text">VLSI Design</span></h1>
+        <p class="hero-text">A full-custom digital neuron implementation verified from schematic through DRC/LVS-clean layout and post-layout timing extraction.</p>
+      </div></section>
+      <section class="section"><div class="container detail-layout"><div class="detail-content">
+        <div class="detail-section" data-reveal><h2>Overview</h2><p>This project designed and verified a digital integrate-and-fire neuron from gate-level schematic through physical layout. It emphasizes full-custom layout discipline, transistor-level simulation, parasitic extraction, and timing closure.</p></div>
+        <div class="detail-section" data-reveal><h2>What I built</h2><ul><li>Designed the IF neuron and D flip-flop layouts in Cadence Virtuoso.</li><li>Applied transistor-pair matching, signal shielding, and parasitic-aware routing to meet timing and verification constraints.</li><li>Validated the design through HSPICE transient simulation and StarRC parasitic extraction.</li></ul></div>
+        <div class="detail-section" data-reveal><h2>Measured outcomes</h2><ul><li>Achieved DRC-clean and LVS-passing physical layouts.</li><li>Implemented the neuron in 391 &micro;m<sup>2</sup>.</li><li>Reached a 0.5 ns minimum clock period and 5.79 ps worst-case propagation delay after post-layout verification.</li></ul></div>
+      </div><aside class="aside-stack">
+        <div class="detail-card" data-reveal><span class="detail-kicker">Project details</span><ul class="meta-list"><li><strong>Duration:</strong> Jan - May 2025</li><li><strong>Associated with:</strong> Arizona State University</li><li><strong>Project type:</strong> VLSI / EDA</li><li><strong>Area:</strong> 391 &micro;m<sup>2</sup></li><li><strong>Verification:</strong> HSPICE and StarRC</li></ul></div>
+        <div class="detail-card" data-reveal><span class="detail-kicker">Skills</span><div class="skill-tags"><span class="skill-tag">Cadence Virtuoso</span><span class="skill-tag">HSPICE</span><span class="skill-tag">StarRC</span><span class="skill-tag">DRC/LVS Verification</span><span class="skill-tag">Full-Custom Layout</span><span class="skill-tag">Post-Layout Timing</span><span class="skill-tag">Parasitic Extraction</span><span class="skill-tag">Digital Design</span></div></div>
+        <div class="cta-card" data-reveal><span class="detail-kicker">Next project</span><h3>Driver Distraction &amp; Drowsiness Detection</h3><p>Next, see a real-time computer-vision system with closed-loop safety alerts.</p><a class="button-inline" href="/projects/driver-distraction-drowsiness-detection/">View next project &rarr;</a></div>
+      </aside></div></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bar">
+          <p>&copy; <span data-year></span> Aishwarya Hareesh Rao. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="mailto:aishwarya.hrao@outlook.com">Email</a>
+            <a href="https://www.linkedin.com/in/aishwaryahrao" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="/assets/resume/Aishwarya_Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
